@@ -1,8 +1,8 @@
 # Hello Github Actions
 
-## Initialiser le workspace
+## Initialiser le workspace local
 
-Créer un nouveau dossier `techlabs`, et ouvrir celui-ci dans votre terminal
+Suu votre oridnateur, créer un nouveau dossier `techlabs`, et ouvrir celui-ci dans votre terminal.
 
 ## Valider les prérequis
 
@@ -22,7 +22,7 @@ dotnet new mvc
 
 ## Lancer votre site en local
 
-Afin de vérifier que votre site local fonctionne correctement, nous allons le lancer en local via la commande suivante 
+Afin de vérifier que votre site fonctionne correctement, nous allons le lancer en local via la commande suivante :
 
 ```bash
 dotnet run
@@ -34,17 +34,19 @@ Accepter le certificat local afin de vous connecter sur votre site qui ressemble
 
 ![](assets/local-run.png)
 
-## Créer un repo sur Github
+## Créer un repository sur Github
 
-Sur Github, il peut être public ou privé pour ce workshop.
+Sur Github, créer un nouveau repository. Il peut être public ou privé pour ce workshop.
 
-Récupérer l'url du git, nous en aurons besoin un peu plus tard dans ce workshop
+Une fois le repository créé, récupérer l'url du git, nous en aurons besoin un peu plus tard dans ce workshop.
 
 ![](assets/github-newrepo.png)
 
 ## Initialiser votre repository
 
-Commençons par ajouter un gitignore à votre projet, pour cela on va utiliser la commande suivante :
+Commençons par ajouter un gitignore à votre projet.
+Le fichier .gitignore permet d'exclure des fichiers et dossiers du suivi de synchronisation de votre répertoire de travail.
+Pour cela on va utiliser la commande suivante :
 
 *Via curl :*
 
@@ -68,16 +70,20 @@ git remote add origin https://github.com/.../....git
 git push -u origin master
 ```
 
+Depuis votre navigateur à la racine de votre repository vous devriez voir désormais le code source de votre application.
+N'hésitez pas à rafraîchier la page si nécessaire.
+
 ## Créer sa première action
 
-Dans votre repository Github fraichement créé qui contient votre code source, vous allez créer votre première action
+Dans votre repository Github fraichement créé qui contient votre code source, vous allez créer votre première action.
 
 ![](assets/github-actions.png)
 
-Dans la liste des actions préconfigurés, chercher l'action suivante et initialiser votre workflow
+Dans la liste des actions préconfigurées, chercher l'action suivante et initialiser votre workflow.
 
 ![](assets/dotnetcore-actions.png)
 
+Une action github correspond à un fichier .yml contenu dans le dossier .github/workflows
 Votre workflow est en cours d'édition et il contient le yaml suivant :
 
 ```yaml
@@ -100,25 +106,15 @@ jobs:
       run: dotnet build --configuration Release
 ```
 
-Il faut maintenant commit notre nouveau fichier et tester.
+Il faut maintenant commit notre nouveau fichier et tester votre pipeline.
 
-Après quelques secondes, vous pouvez voir votre workflow tourner et échouer comme ci-dessous
+Après quelques secondes, vous pouvez voir votre workflow tourner et échouer comme ci-dessous :
 
 ![](assets/github-action-firstrun.png)
-
-Récupérer les modifications en local, puis ouvrir le projet dans Visual Studio Code.
-
-```
-git fetch --all
-git pull
-code .
-```
 
 ## Continuous Integration
 
 ### Corriger l'existant
-
-On va commencer par corriger notre workflow afin que celui-ci fonctionne.
 
 Le message d'erreur est le suivant :
 
@@ -126,7 +122,24 @@ Le message d'erreur est le suivant :
 /opt/hostedtoolcache/dncs/2.2.108/x64/sdk/2.2.108/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets(137,5): error NETSDK1045: The current .NET SDK does not support targeting .NET Core 3.0.  Either target .NET Core 2.2 or lower, or use a version of the .NET SDK that supports .NET Core 3.0. [/home/runner/work/techlabs-github-actions-test/techlabs-github-actions-test/techlabs-githubactions.csproj]
 ```
 
-Pour cela, on va modifier la version de .Net Core dans notre Workflow afin de la passer en `3.0.100`
+Il s'agit donc d'une erreur dans la déclaration de notre workflow.
+On va commencer par corriger notre workflow afin que celui-ci fonctionne.
+
+### Récupérer votre code source
+
+Récupérer les modifications en local, puis ouvrir le projet dans Visual Studio Code.
+
+```bash
+git fetch --all
+git pull
+code .
+```
+
+### Corriger le workflow
+
+Modifier la version de .Net Core dans notre Workflow afin de la passer en `3.0.100`.
+
+### Pousser vos modifications
 
 Ensuite, il vous suffit de push vos modifications afin de les appliquer sur le Workflow dans Github
 
@@ -144,21 +157,21 @@ git push -u origin master
 
 On va maintenant ajouter des steps à notre premier job.
 
-Commençons par les tests de notre application
+Commençons par les tests unitaires de notre application :
 
 ```yaml
 - name: Test with dotnet
   run: dotnet test --configuration Release
 ```
 
-Puis lançons une publication sur notre agent que nous utiliserons par la suite
+Puis lançons une publication sur notre agent, que nous utiliserons par la suite :
 
 ```yaml
 - name: Package with dotnet
   run: dotnet publish --configuration Release
 ```
 
-Pousser vos modifications sur Github pour la suite du workshop
+Pousser vos modifications sur Github pour la suite du workshop :
 
 ```bash
 git add .
@@ -212,7 +225,7 @@ az webapp create -n <app_name> -p <plan_name> -g <rg_name>
 
 ### Récupération du publishprofile
 
-Sur votre Web App dans le portail Azure, récupérez le publishprofile de votre application
+Sur votre Web App dans le portail Azure, récupérez le publish profile de votre application
 
 ![](assets/webapp-downloadpublishprofile.png)
 
@@ -244,6 +257,6 @@ deploy:
           publish-profile: ${{ secrets.dirtyWebappPublishProfile }}
 ```
 
-Après le déploiement votre application Web est disponible sur internet comme suit :
+Après le déploiement, votre application Web est disponible sur internet :
 
 ![](assets/webapp-result.png)
